@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Jason's visual research notes on Attention Is All You Need." />
+    <title>Attention Is All You Need — Jason</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="research-page">
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Jason home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span> JASON<span class="brand-dot">.</span></a>
+      <a class="header-cta guestbook-cta" href="index.html#work">Back to projects <span>←</span></a>
+    </header>
+    <main class="research-shell">
+      <section class="research-hero">
+        <p class="eyebrow"><span></span> Research note / 2026</p>
+        <p class="research-kicker">AI / TRANSFORMERS</p>
+        <h1>Attention is<br><em>all you need.</em></h1>
+        <p class="research-lead">My visual notes on the paper that introduced the Transformer: a model that learns which parts of information matter most to one another.</p>
+      </section>
+
+      <section class="research-section two-col">
+        <div><p class="eyebrow"><span></span> The big idea</p><h2>Look at every word, then decide what matters.</h2></div>
+        <div class="body-copy"><p>When reading a sentence, a Transformer does not have to move through it one word at a time. Self-attention lets each word compare itself with every other word and assign more weight to the useful connections.</p><p>For example, in “The animal didn’t cross the street because <b>it</b> was too tired,” attention can connect “it” strongly to “animal.”</p></div>
+      </section>
+
+      <section class="diagram-card attention-diagram">
+        <div class="diagram-copy"><p class="diagram-number">01 / SELF-ATTENTION</p><h2>Every token can look<br>at every other token.</h2><p>Each connection receives a score. Stronger scores mean the model pays more attention there.</p></div>
+        <div class="diagram-visual">
+          <svg viewBox="0 0 700 380" role="img" aria-label="A self-attention diagram connecting the word it to animal">
+            <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#b7f335" /></marker></defs>
+            <path class="attention-line strong" d="M111 240 C170 70, 440 66, 509 239" marker-end="url(#arrow)" />
+            <path class="attention-line" d="M111 240 C190 120, 260 125, 315 239" />
+            <path class="attention-line faint" d="M111 240 C245 174, 400 178, 607 239" />
+            <g class="tokens"><rect x="55" y="220" width="112" height="43"/><text x="111" y="247">ANIMAL</text><rect x="259" y="220" width="112" height="43"/><text x="315" y="247">DIDN'T</text><rect x="453" y="220" width="112" height="43"/><text x="509" y="247">IT</text><rect x="551" y="220" width="112" height="43"/><text x="607" y="247">TIRED</text></g>
+            <circle cx="310" cy="83" r="29" class="focus-ring"/><text x="310" y="87" class="score">0.82</text><text x="288" y="38" class="svg-label">STRONG LINK</text>
+          </svg>
+        </div>
+      </section>
+
+      <section class="research-section two-col compact"><div><p class="eyebrow"><span></span> Queries, keys &amp; values</p><h2>Three ways to describe a word.</h2></div><div class="body-copy"><p>For each token, the model creates three learned vectors: a <b>query</b> asks what it is looking for, a <b>key</b> says what it offers, and a <b>value</b> carries its information. Comparing queries with keys creates the attention scores.</p></div></section>
+
+      <section class="diagram-card qkv-diagram">
+        <div class="diagram-copy"><p class="diagram-number">02 / Q · K · V</p><h2>Match, weigh,<br>then combine.</h2></div>
+        <div class="diagram-visual"><svg viewBox="0 0 700 290" role="img" aria-label="Query key value attention flow diagram"><defs><marker id="qkv-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 z" fill="#b7f335" /></marker></defs><g class="flow-box"><rect x="35" y="112" width="130" height="66"/><text x="100" y="140">QUERY</text><text x="100" y="159">What I seek</text></g><g class="flow-box orange"><rect x="235" y="112" width="130" height="66"/><text x="300" y="140">KEY</text><text x="300" y="159">What I offer</text></g><g class="flow-box"><rect x="435" y="112" width="130" height="66"/><text x="500" y="140">VALUE</text><text x="500" y="159">My info</text></g><path class="flow-line" d="M165 145H225" marker-end="url(#qkv-arrow)"/><path class="flow-line" d="M365 145H425" marker-end="url(#qkv-arrow)"/><path class="flow-line" d="M565 145H575" marker-end="url(#qkv-arrow)"/><circle cx="620" cy="145" r="42" class="combine"/><text x="620" y="141" class="combine-text">NEW</text><text x="620" y="157" class="combine-text">MEANING</text></svg></div>
+      </section>
+
+      <section class="diagram-card heads-diagram">
+        <div class="diagram-copy"><p class="diagram-number">03 / MULTI-HEAD ATTENTION</p><h2>More than one<br>way to look.</h2><p>Different attention heads can learn different patterns at the same time: grammar, position, meaning, or something we have not named yet.</p></div>
+        <div class="diagram-visual heads"><div class="head-input">INPUT TOKENS</div><div class="head-grid"><div>HEAD 01<br><span>grammar</span></div><div>HEAD 02<br><span>meaning</span></div><div>HEAD 03<br><span>position</span></div><div>HEAD 04<br><span>context</span></div></div><div class="head-output">COMBINED UNDERSTANDING</div></div>
+      </section>
+
+      <section class="research-ending"><p class="eyebrow"><span></span> My takeaway</p><h2>Attention gives a model<br>context — and context<br>changes <em>everything.</em></h2><a class="button button-primary" href="index.html#work">Back to my projects <span>←</span></a></section>
+    </main>
+    <footer><a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span> JASON<span class="brand-dot">.</span></a><p>Research notes in progress.</p><a href="index.html">Portfolio home ↑</a></footer>
+  </body>
+</html>
