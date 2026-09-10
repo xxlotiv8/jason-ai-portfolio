@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Browser Gesture Lab</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <main class="app">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Browser-only gesture control</p>
+          <h1>Use your hand to control this page.</h1>
+          <p class="lede">Your camera stays in this tab. Move your thumb to steer the glow cursor, then pinch thumb and index finger to press, tap, and drag web controls.</p>
+        </div>
+        <div class="status-card">
+          <div class="status-row"><span class="dot" id="cameraDot"></span><span id="cameraStatus">Camera idle</span></div>
+          <div class="status-row"><span class="dot" id="handDot"></span><span id="handStatus">Waiting for hand</span></div>
+          <div class="hint">Pinch = press and drag in this page</div>
+        </div>
+      </section>
+      <section class="workspace">
+        <div class="camera-shell"><video id="video" playsinline muted></video><canvas id="overlay"></canvas></div>
+        <aside class="panel">
+          <h2>Gesture map</h2>
+          <ul><li><strong>Thumb</strong> - move the browser cursor.</li><li><strong>Pinch</strong> - press, tap, or grab an item.</li><li><strong>Move while pinching</strong> - drag the note.</li></ul>
+          <div class="readout"><div><span>Pointer X</span><strong id="pointerX">0</strong></div><div><span>Pointer Y</span><strong id="pointerY">0</strong></div><div><span>Pinch distance</span><strong id="pinchDistance">0</strong></div><div><span>Live gain</span><strong id="activeGain">1.70x</strong></div></div>
+          <label class="sensitivity-control" for="sensitivity"><span>Dynamic sensitivity <strong id="sensitivityValue">1.70x base</strong></span><input id="sensitivity" type="range" min="0.8" max="2.6" value="1.7" step="0.05" /><small>Moves precisely when slow, then accelerates as your thumb moves faster.</small></label>
+          <button id="startButton" type="button">Start camera</button>
+          <label class="mirror-control"><input id="mirrorPreview" type="checkbox" /> Mirror camera preview</label>
+          <p class="bridge-status" id="webStatus">Browser-only mode: ready</p>
+          <p class="fine-print">Tip: use good lighting and keep your hand centered in the frame for the most stable tracking.</p>
+        </aside>
+      </section>
+      <section class="interaction-lab" id="interactionLab" aria-label="Browser gesture interaction lab">
+        <div class="lab-heading"><div><p class="eyebrow">Interaction lab</p><h2>Pinch to explore.</h2></div><p id="actionStatus" aria-live="polite">Start the camera, then guide the glow cursor over a control.</p></div>
+        <div class="lab-actions"><button class="gesture-action" data-gesture-action="pulse" type="button">Pulse the surface</button><button class="gesture-action secondary" data-gesture-action="color" type="button">Shift the color</button></div>
+        <article class="gesture-note" id="gestureNote" data-gesture-draggable tabindex="0"><span class="note-grip" aria-hidden="true">Drag me with a pinch</span><h3>Pinch, hold, move.</h3><p>Keep pinching while you move your thumb to drag this card around the lab.</p></article>
+      </section>
+    </main>
+    <div id="cursor" aria-hidden="true"></div><div id="clickFlash" aria-hidden="true"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
