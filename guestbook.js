@@ -4,6 +4,7 @@ const ownerButton = document.querySelector('#owner-mode');
 const ownerState = document.querySelector('#owner-state');
 const storageKey = 'jason-portfolio-guestbook';
 const ownerKey = 'jason-portfolio-owner-token';
+const apiUrl = 'https://jason-guestbook-api.jasono-oyg-1a8.workers.dev/api/messages';
 let remoteAvailable = false;
 
 const formatDate = () => new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date());
@@ -12,7 +13,7 @@ function localEntries() { try { return JSON.parse(localStorage.getItem(storageKe
 function ownerUI() { const on = Boolean(token()); ownerState.textContent = on ? 'Reply mode enabled — posting as Jason' : 'Guest view — messages only'; ownerButton.textContent = on ? 'Disable reply mode' : 'Jason? Enable reply mode'; }
 
 async function entries() {
-  try { const response = await fetch('/api/messages'); if (!response.ok) throw new Error(); remoteAvailable = true; return response.json(); }
+  try { const response = await fetch(apiUrl); if (!response.ok) throw new Error(); remoteAvailable = true; return response.json(); }
   catch { remoteAvailable = false; return localEntries(); }
 }
 
@@ -39,7 +40,7 @@ function replyForm(entryElement, id) {
   const textarea = document.createElement('textarea'); textarea.maxLength = 280; textarea.placeholder = 'Write your reply as Jason…'; textarea.required = true;
   const submit = document.createElement('button'); submit.type = 'submit'; submit.textContent = 'Post reply ↗'; reply.append(textarea, submit);
   reply.addEventListener('submit', async (event) => { event.preventDefault(); const message = textarea.value.trim(); if (!message) return;
-    if (remoteAvailable) { const response = await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Owner-Token': token() }, body: JSON.stringify({ type: 'reply', messageId: id, message }) }); if (!response.ok) { alert('Reply could not be posted. Check owner reply mode.'); return; } }
+    if (remoteAvailable) { const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Owner-Token': token() }, body: JSON.stringify({ type: 'reply', messageId: id, message }) }); if (!response.ok) { alert('Reply could not be posted. Check owner reply mode.'); return; } }
     else { const list = localEntries(); list[id].replies = list[id].replies || []; list[id].replies.push({ message, date: formatDate() }); localStorage.setItem(storageKey, JSON.stringify(list)); }
     render();
   });
@@ -53,7 +54,7 @@ ownerButton.addEventListener('click', () => {
   ownerUI(); render();
 });
 form.addEventListener('submit', async (event) => { event.preventDefault(); const data = new FormData(form); const name = data.get('name').trim(); const message = data.get('message').trim(); if (!name || !message) return;
-  if (remoteAvailable) { const response = await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'message', name, message }) }); if (!response.ok) { alert('Message could not be posted. Please try again.'); return; } }
+  if (remoteAvailable) { const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'message', name, message }) }); if (!response.ok) { alert('Message could not be posted. Please try again.'); return; } }
   else { const list = localEntries(); list.unshift({ name, message, date: formatDate(), replies: [] }); localStorage.setItem(storageKey, JSON.stringify(list.slice(0, 20))); }
   form.reset(); render();
 });
