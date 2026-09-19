@@ -1,0 +1,23 @@
+/* Project-specific artwork: crisp, static vectors rather than repeated abstract shapes. */
+.hero-art{margin-left:15px;background:#121814;border-color:#344138}
+.hero-illustration{display:block;width:100%;height:100%}
+.hero-art:after{content:"";position:absolute;inset:10px;border:1px solid rgba(183,243,53,.1);pointer-events:none}
+.art-label{z-index:1;text-shadow:0 1px 5px #101412}
+.label-bottom{color:#d0ef9a}
+.attention-visual{background:#121814}
+.attention-visual:before,.gesture-visual:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.8%,rgba(183,243,53,.07) 50%,transparent 50.2%),linear-gradient(transparent 49.8%,rgba(183,243,53,.07) 50%,transparent 50.2%);background-size:40px 40px;mask-image:linear-gradient(135deg,transparent,#000 25%,#000 80%,transparent)}
+.attention-visual svg,.gesture-visual svg,.voxel-visual svg{position:relative;display:block;width:100%;height:100%}
+.attention-visual svg{padding:22px 18px}
+.attention-columns rect{fill:#182119;stroke:#40513c;stroke-width:1}
+.attention-heat rect{fill:#273827;stroke:#526b3d;stroke-width:.8}
+.attention-heat rect:nth-child(3n),.attention-heat rect:nth-child(5n){fill:#719a37}
+.attention-heat rect:nth-child(6n){fill:#b7f335}
+.attention-arcs path{fill:none;stroke:#72866a;stroke-width:1.5;opacity:.45}
+.attention-arcs .arc-strong{stroke:#b7f335;stroke-width:2.5;opacity:.9}
+.attention-tokens rect{fill:#1b241d;stroke:#698647;stroke-width:1}
+.attention-tokens rect:nth-child(5){fill:#b7f335;stroke:#b7f335}
+.attention-tokens text{fill:#dce8dd;font:600 11px monospace;text-anchor:middle;letter-spacing:.04em}
+.attention-tokens text:nth-of-type(5){fill:#172009}
+.visual-caption{fill:#a5b49f;font:10px monospace;letter-spacing:1.5px}
+.voxel-visual,.gesture-visual{background:#131a15}
+@media(max-width:760px){.hero-art{margin:46px 0 0;height:320px}.attention-visual svg{min-width:540px}.attention-visual{overflow:auto}.gesture-visual svg{min-width:480px}.gesture-visual{overflow:hidden}}
