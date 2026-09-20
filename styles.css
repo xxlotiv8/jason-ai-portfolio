@@ -353,3 +353,13 @@ footer.site-footer { width: 100%; max-width: none; min-height: 0; margin: 0; pad
 .site-footer .footer-socials a:hover, .footer-column nav a:hover { color: #39ce7e; }
 @media (max-width: 760px) { footer.site-footer { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; padding: 34px 20px; } .footer-identity { grid-row: span 2; } }
 @media (max-width: 480px) { footer.site-footer { grid-template-columns: 1fr; gap: 24px; } .footer-identity { grid-row: auto; } }
+
+
+/* Footer colors follow the selected site theme. */
+footer.site-footer { background: #fff; color: var(--ink); border-top-color: var(--line); }
+[data-theme="dark"] footer.site-footer { background: var(--paper-deep); }
+.site-footer .brand { color: var(--ink); }
+.site-footer .brand-dot { color: var(--accent); }
+.site-footer .footer-socials a, .footer-column nav a { color: var(--muted); }
+.footer-column h2 { color: var(--ink); }
+.site-footer .footer-socials a:hover, .footer-column nav a:hover { color: var(--accent); }
