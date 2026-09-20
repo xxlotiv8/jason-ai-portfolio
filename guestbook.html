@@ -6,6 +6,7 @@
     <meta name="description" content="Leave Jason a public message." />
     <title>Messages — Jason</title>
     <script src="theme.js"></script>
+  <script src="language.js" defer></script>
     <link rel="stylesheet" href="styles.css?v=portfolio-layout-20260920" />
   </head>
   <body>
@@ -17,6 +18,12 @@
         <a href="guestbook.html" aria-current="page">Messages</a>
         <a href="index.html#now">Now</a>
       </nav>
+      <label class="language-picker">
+        <span class="sr-only">Language</span>
+        <select class="language-select" aria-label="Language">
+          <option value="en">English</option><option value="zh-Hant">繁體中文</option><option value="zh-Hans">简体中文</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="es">Español</option><option value="ja">日本語</option>
+        </select>
+      </label>
       <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false">
         <svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
         <svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"/><path d="m16.8 4.2.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5.5-1.5Z"/></svg>
