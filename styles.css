@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   color-scheme: light;
@@ -11,7 +11,8 @@
   --accent: #276b48;
   --accent-soft: #dce8dc;
   --mono: 'DM Mono', ui-monospace, monospace;
-  --sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --sans: 'Open Sans', ui-sans-serif, system-ui, sans-serif;
+  --display: 'Manrope', ui-sans-serif, system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -51,6 +52,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 24px; color: var(--muted); font: 500 11px/1.4 var(--mono); letter-spacing: .075em; text-transform: uppercase; }
 .eyebrow span { display: inline-block; width: 8px; height: 8px; flex: 0 0 8px; background: var(--accent); }
 h1, h2, h3, p { margin-top: 0; }
+h1, h2, h3 { font-family: var(--display); }
 h1 { max-width: 680px; margin-bottom: 24px; font-size: clamp(48px, 6.7vw, 82px); line-height: .99; font-weight: 700; letter-spacing: -.065em; }
 em { color: var(--accent); font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: -.055em; }
 .hero-text { max-width: 490px; margin-bottom: 32px; color: var(--muted); font-size: 16px; line-height: 1.75; }
