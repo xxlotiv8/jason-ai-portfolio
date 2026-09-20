@@ -6,7 +6,7 @@
     <meta name="description" content="Jason's personal AI portfolio." />
     <title>Jason — Building with AI</title>
     <script src="theme.js"></script>
-    <link rel="stylesheet" href="styles.css?v=photos-20260920" />
+    <link rel="stylesheet" href="styles.css?v=portfolio-layout-20260920" />
   </head>
   <body>
     <div class="page-glow glow-one"></div>
@@ -21,14 +21,14 @@
       <nav aria-label="Primary navigation">
         <a href="#about">About</a>
         <a href="#work">Work</a>
-        <a href="#guestbook">Guestbook</a>
+        <a href="guestbook.html">Guestbook</a>
         <a href="#now">Now</a>
       </nav>
       <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false">
         <svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
         <svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"/><path d="m16.8 4.2.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5.5-1.5Z"/></svg>
       </button>
-      <a class="header-cta guestbook-cta" href="#guestbook">Sign the guestbook <span>↓</span></a>
+      <a class="header-cta guestbook-cta" href="guestbook.html">Sign the guestbook <span>↗</span></a>
     </header>
 
 
@@ -40,7 +40,7 @@
           <p class="hero-text">I’m Jason, a Form 3 student from Hong Kong. I explore AI, psychology, cybersecurity, Minecraft, and the new ideas that make technology feel a little bit like magic.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#work">See what I’m building <span>↓</span></a>
-            <a class="button button-quiet" href="#guestbook">Leave a public message <span>↗</span></a>
+            <a class="button button-quiet" href="guestbook.html">Leave a public message <span>↗</span></a>
           </div>
         </div>
 
@@ -99,7 +99,7 @@
             <div class="project-details"><p class="project-tag">MAC APP / COMPUTER VISION</p><div><h3>Hand Gesture Control</h3><p>My hands-free mouse app turns camera-based hand gestures into cursor movement and clicks, making computer control more natural and accessible.</p></div><span aria-hidden="true">↗</span></div>
           </a>
           <article class="project-card add-card">
-            <div class="add-symbol">+</div><p class="project-tag">OPEN SLOT / YOUR NEXT IDEA</p><h3>More is coming.</h3><p>Keep this space for future adventures.</p>
+            <div class="add-symbol" aria-hidden="true">+</div><div class="add-copy"><p class="project-tag">OPEN SLOT / YOUR NEXT IDEA</p><h3>More is coming.</h3><p>Keep this space for future adventures.</p></div>
           </article>
         </div>
       </section>
@@ -109,35 +109,12 @@
         <div class="now-card">
           <div class="now-header"><p class="eyebrow"><span></span> 03 / Right now</p><p class="status"><i></i> OPEN TO IDEAS</p></div>
           <div class="now-body"><h2>Always building<br>the next <em>thing.</em></h2><p>Right now, I’m learning how attention lets Transformers weigh the most relevant parts of information, and why that changed what AI can do. New projects, experiments, and rabbit holes will land here as they happen.</p></div>
-          <div class="now-footer"><span>LAST UPDATED — SEPTEMBER 2026</span><a href="#guestbook">Leave a public signal <b>↗</b></a></div>
+          <div class="now-footer"><span>LAST UPDATED — SEPTEMBER 2026</span><a href="guestbook.html">Leave a public signal <b>↗</b></a></div>
         </div>
       </section>
 
 
     </main>
     <footer><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span> JASON<span class="brand-dot">.</span></a><p>Made with curiosity and a few good prompts.</p><a href="#top">Back to top ↑</a></footer>
-    <section class="section-shell guestbook" id="guestbook">
-      <div class="guestbook-intro">
-        <p class="eyebrow"><span></span> 04 / Guestbook</p>
-        <h2>Leave a little<br><em>signal.</em></h2>
-        <p>Have an idea, a question, or just want to say hi? Leave a message right here in the browser.</p>
-        <p class="guestbook-note">NO EMAIL REQUIRED · YOUR MESSAGE APPEARS IN THE GUESTBOOK</p>
-      </div>
-      <div class="guestbook-panel">
-        <form id="guestbook-form">
-          <label for="guest-name">YOUR NAME</label>
-          <input id="guest-name" name="name" maxlength="40" placeholder="Name or nickname" required />
-          <label for="guest-message">YOUR MESSAGE</label>
-          <textarea id="guest-message" name="message" maxlength="280" placeholder="Write something kind…" required></textarea>
-          <div class="form-footer"><span><i></i> PUBLIC MESSAGE</span><button type="submit">Send signal <b>↗</b></button></div>
-        </form>
-        <div class="owner-bar"><button id="owner-mode" type="button">Jason? Enable reply mode</button><span id="owner-state">Guest view — messages only</span></div>
-        <div class="guestbook-messages" aria-live="polite">
-          <p class="empty-message">Be the first to leave a message.</p>
-        </div>
-      </div>
-    </section>
-        
-  <script src="guestbook.js?v=6ad3de8"></script>
   </body>
 </html>
