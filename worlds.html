@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Minecraft worlds and scenes built by Jason." />
+  <title>Worlds I’ve created — Jason</title>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="styles.css?v=world-gallery-20260920" />
+  <style>
+    .worlds-main { width: min(100% - 64px, 1192px); margin: 0 auto; padding: 80px 0 112px; }
+    .worlds-heading { max-width: 720px; margin-bottom: 48px; }
+    .worlds-heading h1 { margin: 0 0 18px; font-size: clamp(42px, 6vw, 72px); line-height: 1; letter-spacing: -.06em; }
+    .worlds-heading p:not(.eyebrow) { max-width: 580px; margin: 0; color: var(--muted); font-size: 16px; line-height: 1.7; }
+    .worlds-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+    .world-shot { min-width: 0; margin: 0; border-bottom: 1px solid var(--line); }
+    .world-shot:first-child { grid-column: 1 / -1; }
+    .world-shot img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--paper-deep); }
+    .world-shot figcaption { padding: 14px 0 18px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .worlds-back { margin-top: 40px; }
+    @media (max-width: 700px) { .worlds-main { width: min(100% - 40px, 1192px); padding: 56px 0 80px; } .worlds-gallery { grid-template-columns: 1fr; gap: 24px; } .world-shot:first-child { grid-column: auto; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html#top" aria-label="Jason home">JASON<span class="brand-dot">.</span></a>
+    <nav aria-label="Primary navigation"><a href="index.html#about">About</a><a href="index.html#work">Work</a><a href="guestbook.html">Messages</a><a href="index.html#now">Now</a></nav>
+    <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false">
+      <svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+      <svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"/></svg>
+    </button>
+    <a class="header-cta guestbook-cta" href="guestbook.html">Send me a message <span>↗</span></a>
+  </header>
+  <main class="worlds-main">
+    <div class="worlds-heading"><p class="eyebrow"><span></span> Minecraft / Worlds</p><h1>Worlds I’ve created.</h1><p>A few places and moments from my Minecraft worlds, from quiet forests to adventures with friends.</p></div>
+    <div class="worlds-gallery" aria-label="Minecraft world screenshots">
+      <figure class="world-shot"><img src="world-forest-sunset-site.jpg" alt="A dense Minecraft forest backlit by a warm sunset" fetchpriority="high" decoding="async" /><figcaption>Golden light through the forest.</figcaption></figure>
+      <figure class="world-shot"><img src="world-moonlit-water-site.jpg" alt="Moonlight shining over water between dark Minecraft trees" loading="lazy" decoding="async" /><figcaption>A quiet night by the water.</figcaption></figure>
+      <figure class="world-shot"><img src="world-forest-sunrise-site.jpg" alt="Sunrise glowing through a Minecraft forest and across a river" loading="lazy" decoding="async" /><figcaption>Sunrise among the trees.</figcaption></figure>
+      <figure class="world-shot"><img src="world-flower-fields-site.jpg" alt="A wide Minecraft field of red flowers in the evening light" loading="lazy" decoding="async" /><figcaption>Red flowers across the field.</figcaption></figure>
+      <figure class="world-shot"><img src="world-river-adventure-site.jpg" alt="Two Minecraft characters travelling together in boats across a river" loading="lazy" decoding="async" /><figcaption>A river trip with a friend.</figcaption></figure>
+      <figure class="world-shot"><img src="world-flower-forest-sunset-site.jpg" alt="Colorful Minecraft flowers beside a forest in the setting sun" loading="lazy" decoding="async" /><figcaption>Flowers at the edge of the forest.</figcaption></figure>
+    </div>
+    <div class="worlds-back"><a class="button button-quiet" href="index.html#work">← Back to projects</a></div>
+  </main>
+  <footer class="site-footer"><a class="brand" href="index.html#top">JASON<span class="brand-dot">.</span></a><nav class="footer-socials" aria-label="Social links"><span>FIND ME</span><a href="https://github.com/xxlotiv8" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.youtube.com/@Xlotiv8" target="_blank" rel="noreferrer">YouTube ↗</a><a href="https://x.com/xlotiv8" target="_blank" rel="noreferrer">X ↗</a><a href="https://www.instagram.com/xlotiv8/" target="_blank" rel="noreferrer">Instagram ↗</a><a href="guestbook.html">Messages ↗</a></nav><a href="#top">Back to top ↑</a></footer>
+</body>
+</html>
