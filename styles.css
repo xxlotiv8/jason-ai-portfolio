@@ -303,3 +303,28 @@ footer p { margin: 0; color: var(--muted); font-size: 11px; }
 [data-theme="dark"] .attention-line.faint { stroke: #536457; }
 [data-theme="dark"] .tokens rect { stroke: #718575; }
 [data-theme="dark"] .diagram-visual { color: var(--ink); }
+
+
+/* Portfolio refinements: combine the intro and About as one section. */
+.hero.about-combined { min-height: 0; grid-template-areas: "intro art" "about about"; row-gap: 64px; }
+.hero.about-combined .hero-copy { grid-area: intro; }
+.hero.about-combined .hero-art { grid-area: art; }
+.about-band { grid-area: about; padding-top: 52px; display: grid; grid-template-columns: .78fr 1.22fr; gap: 72px; border-top: 1px solid var(--line); }
+.about-band .large-copy { margin-bottom: 32px; }
+
+/* Keep all project images on the same crop and height. */
+.project-visual, .featured .project-visual { height: 320px; min-height: 0; }
+
+.footer-socials { display: flex; align-items: center; gap: 20px; margin-left: auto; }
+.footer-socials span { color: var(--muted); font: 500 10px/1.5 var(--mono); letter-spacing: .075em; }
+.footer-socials a { color: var(--ink); text-decoration: none; font-size: 12px; font-weight: 700; }
+.footer-socials a:hover { color: var(--accent); }
+
+@media (max-width: 760px) {
+  .hero.about-combined { padding-bottom: 52px; }
+  .about-band { margin-top: 48px; padding-top: 36px; display: block; }
+  .about-band .section-heading { margin-bottom: 28px; }
+  .project-visual, .featured .project-visual { width: 100%; height: 190px; min-height: 0; }
+  .footer-socials { gap: 12px; margin-left: 0; }
+  .footer-socials span { display: none; }
+}
