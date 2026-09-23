@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Jason's notes and summaries from YouTube videos about technology, AI, security, and computer science." />
+    <title>Video Notes — Jason</title>
+    <script src="theme.js"></script>
+    <script src="language.js?v=multilingual-20260920b" defer></script>
+    <link rel="stylesheet" href="styles.css?v=video-notes-20260922" />
+  </head>
+  <body class="video-notes-page">
+    <header class="site-header">
+      <a class="brand" href="index.html#top" aria-label="Jason home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span> JASON<span class="brand-dot">.</span></a>
+      <nav aria-label="Primary navigation">
+        <a href="index.html#about">About</a>
+        <a href="index.html#work">Work</a>
+        <a href="videos.html" aria-current="page">Videos</a>
+        <a href="guestbook.html">Messages</a>
+        <a href="index.html#now">Now</a>
+      </nav>
+      <label class="language-picker"><span class="sr-only">Language</span><select class="language-select" aria-label="Language"><option value="en">English</option><option value="zh-Hant">繁體中文</option><option value="zh-Hans">简体中文</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="es">Español</option><option value="ja">日本語</option></select></label>
+      <button class="theme-toggle" type="button" aria-label="Switch to dark mode" title="Switch to dark mode" aria-pressed="false"><svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg><svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.5 8.5 0 0 1 8.8 3.8 8.6 8.6 0 1 0 20.2 15.2Z"/><path d="m16.8 4.2.5 1.5 1.5.5-1.5.5-.5 1.5-.5-1.5-1.5-.5 1.5-.5.5-1.5Z"/></svg></button>
+      <a class="header-cta guestbook-cta" href="index.html#work">Back to projects <span>←</span></a>
+    </header>
+
+    <main class="video-shell">
+      <section class="video-hero">
+        <p class="eyebrow"><span></span> 05 / Video notes</p>
+        <h1>Videos,<br><em>distilled.</em></h1>
+        <div><p class="video-lead">My notes from long-form videos about technology, security, and computer science—condensed into the ideas worth remembering.</p><p class="video-count">2 VIDEOS · DIRECT SOURCE LINKS INCLUDED</p></div>
+      </section>
+
+      <article class="video-summary" id="bitcoin-wallet">
+        <div class="video-summary-head">
+          <a class="video-thumbnail" href="https://www.youtube.com/watch?v=EDkrFdihxTY" target="_blank" rel="noreferrer" aria-label="Watch AI Just Broke A Bitcoin Wallet on YouTube"><img src="https://i.ytimg.com/vi/EDkrFdihxTY/maxresdefault.jpg" alt="YouTube thumbnail for AI Just Broke A Bitcoin Wallet" loading="lazy" decoding="async" /><span>Watch on YouTube ↗</span></a>
+          <div class="video-title-block"><p class="video-kicker">AI SECURITY / BITCOIN</p><h2>AI Just Broke A Bitcoin Wallet</h2><p>This ARK Invest discussion examines how AI is transforming cybersecurity through a reported weakness in older Coldcard hardware wallets. The key clarification is that AI did not break Bitcoin’s cryptography or protocol—it reportedly helped identify a weakness in one wallet product’s firmware.</p><a class="source-link" href="https://www.youtube.com/watch?v=EDkrFdihxTY" target="_blank" rel="noreferrer">Open the original video <span>↗</span></a></div>
+        </div>
+        <div class="video-summary-body">
+          <section><h3>Main points</h3><ul>
+            <li>Some older Coldcard Mark III wallets reportedly generated private keys with far less randomness than intended—around 32 bits of entropy rather than a 256-bit space. That could make affected keys searchable using ordinary computing hardware.</li>
+            <li>The speakers associate the issue with the movement of roughly 1,000 BTC, but the connection between the suspected vulnerability and every transfer has not been definitively established.</li>
+            <li>An open-weight model called Kimi K3 reportedly produced a detailed vulnerability report, while guarded closed models initially restricted similar analysis.</li>
+            <li>AI can reduce an initial security audit from weeks and large specialist budgets to hours and hundreds of dollars. Its findings still need expert validation and reproducible testing.</li>
+            <li>Domain expertise combined with AI helps defenders reject false positives and understand which findings are genuinely exploitable.</li>
+            <li>Some companies are building continuous, locally hosted “AI immune systems” that review code changes, dependencies, and repositories without sending sensitive findings outside the organization.</li>
+            <li>The incident does not invalidate self-custody. Multi-vendor multisignature setups can reduce single-device risk, although they add operational complexity.</li>
+            <li>There is no universal custody answer: self-custody, professional custody, and Bitcoin ETFs trade independence against convenience, privacy, liquidity, and counterparty risk.</li>
+            <li>AI may weaken the market for undisclosed zero-day vulnerabilities because flaws can be found and exploited faster, forcing maintainers toward continuous security review.</li>
+            <li>The quantum-computing section is speculative. The speakers believe useful cryptographic attacks remain years away but argue that Bitcoin should prepare migration paths.</li>
+          </ul></section>
+          <aside class="timestamp-list"><h3>Useful timestamps</h3><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=163s" target="_blank" rel="noreferrer"><span>02:43</span> Coldcard incident</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=498s" target="_blank" rel="noreferrer"><span>08:18</span> Cost of audits</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=624s" target="_blank" rel="noreferrer"><span>10:24</span> Open vs. closed models</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=985s" target="_blank" rel="noreferrer"><span>16:25</span> Bitcoin itself was not broken</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=1495s" target="_blank" rel="noreferrer"><span>24:55</span> Custody choices</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=1913s" target="_blank" rel="noreferrer"><span>31:53</span> Local AI security</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=2194s" target="_blank" rel="noreferrer"><span>36:34</span> Expertise plus AI</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=2680s" target="_blank" rel="noreferrer"><span>44:40</span> Quantum risk</a><a href="https://www.youtube.com/watch?v=EDkrFdihxTY&t=3254s" target="_blank" rel="noreferrer"><span>54:14</span> Conclusions</a></aside>
+        </div>
+        <p class="video-bottom-line"><strong>Bottom line:</strong> The title is deliberately dramatic. The real message is that AI makes vulnerability discovery much faster and cheaper for attackers and defenders. Bitcoin remained intact, but software teams increasingly need continuous AI-assisted security testing.</p>
+      </article>
+
+      <article class="video-summary" id="cs336-architecture">
+        <div class="video-summary-head">
+          <a class="video-thumbnail" href="https://www.youtube.com/watch?v=HXDZARkr6Sk" target="_blank" rel="noreferrer" aria-label="Watch Stanford CS336 architecture lecture on YouTube"><img src="https://i.ytimg.com/vi/HXDZARkr6Sk/maxresdefault.jpg" alt="YouTube thumbnail for Stanford CS336 architecture and hyperparameters lecture" loading="lazy" decoding="async" /><span>Watch on YouTube ↗</span></a>
+          <div class="video-title-block"><p class="video-kicker">STANFORD CS336 / LANGUAGE MODELS</p><h2>Architectures and hyperparameters</h2><p>Tatsunori Hashimoto surveys successful language models to identify which Transformer design choices have become dependable defaults. It is an architecture survey rather than a step-by-step coding tutorial.</p><div class="source-row"><a class="source-link" href="https://www.youtube.com/watch?v=HXDZARkr6Sk" target="_blank" rel="noreferrer">Open the original video <span>↗</span></a><a class="source-link quiet" href="https://cs336.stanford.edu/" target="_blank" rel="noreferrer">Official course page <span>↗</span></a></div></div>
+        </div>
+        <div class="video-summary-body full-width">
+          <section><h3>Main points</h3><ul class="two-column-list">
+            <li>Modern Transformers remain close to the original design. Most changes refine stability, speed, or inference cost rather than replacing the architecture.</li>
+            <li>Pre-normalization keeps the residual path clean and helps gradients travel through deep networks reliably.</li>
+            <li>RMSNorm largely replaces LayerNorm because it performs similarly with fewer operations and less memory movement.</li>
+            <li>Bias terms are commonly removed because they add little useful capacity but create extra memory operations.</li>
+            <li>Gated feed-forward layers such as SwiGLU and GeGLU generally outperform ReLU or GELU. Their hidden dimension is often about 8/3 of model width rather than 4×.</li>
+            <li>RoPE is the dominant positional method, encoding relative positions by rotating pairs of vector coordinates at different frequencies.</li>
+            <li>Many hyperparameters are forgiving. Hardware efficiency often matters more than a theoretically perfect width, depth, or head ratio.</li>
+            <li>Larger vocabularies support multilingual models: production systems commonly use 100,000–200,000 tokens rather than roughly 30,000.</li>
+            <li>Weight decay can improve optimization even when overfitting is unlikely, possibly through its interaction with the learning-rate schedule.</li>
+            <li>At scale, stability techniques include Z-loss, QK normalization, and sometimes logit soft-capping.</li>
+            <li>Grouped-query attention reduces KV-cache memory while retaining nearly the quality of full multi-head attention.</li>
+            <li>Long-context models increasingly alternate cheaper sliding-window attention with occasional full-attention layers.</li>
+          </ul></section>
+        </div>
+        <div class="architecture-recipe"><span>PRACTICAL STARTING RECIPE</span><p>Pre-norm + RMSNorm + no biases + SwiGLU + RoPE + GQA</p><small>Add QK normalization and hybrid local/global attention when stability or long context requires them.</small></div>
+        <p class="video-bottom-line"><strong>Bottom line:</strong> Language-model architecture is an engineering compromise between quality, training stability, GPU efficiency, and inference cost.</p>
+      </article>
+    </main>
+
+    <footer class="site-footer"><div class="footer-identity"><a class="brand" href="index.html#top">JASON<span class="brand-dot">.</span></a><nav class="footer-socials" aria-label="Social links"><a href="https://github.com/xxlotiv8" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.youtube.com/@Xlotiv8" target="_blank" rel="noreferrer">YouTube ↗</a><a href="https://x.com/xlotiv8" target="_blank" rel="noreferrer">X ↗</a><a href="https://www.instagram.com/xlotiv8/" target="_blank" rel="noreferrer">Instagram ↗</a></nav></div><div class="footer-column"><h2>About</h2><nav aria-label="About pages"><a href="index.html#about">About me</a><a href="index.html#hobbies">My hobbies</a><a href="index.html#now">Now</a></nav></div><div class="footer-column"><h2>Projects</h2><nav aria-label="Projects"><a href="index.html#work">All projects</a><a href="attention.html">Research notes</a><a href="videos.html">Video notes</a><a href="worlds.html" target="_blank" rel="noreferrer">Minecraft worlds ↗</a></nav></div><div class="footer-column"><h2>More</h2><nav aria-label="More pages"><a href="guestbook.html">Messages</a><a href="index.html#top">Back to top ↑</a></nav></div></footer>
+  </body>
+</html>
