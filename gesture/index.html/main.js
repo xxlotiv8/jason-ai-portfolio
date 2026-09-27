@@ -25,6 +25,8 @@ let smoothedX = 0.5;
 let smoothedY = 0.5;
 let seenHand = false;
 let pinchHeld = false;
+let bridgeOnline = false;
+let lastBridgeSend = 0;
 let previewMirrored = false;
 let lastCursorX = 0.5;
 let lastCursorY = 0.5;
@@ -38,6 +40,7 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 let hoveredTarget = null;
 
+const BRIDGE_URL = "http://127.0.0.1:8765/event";
 let cursorGain = Number(sensitivity.value);
 const PINCH_DOWN_THRESHOLD = 0.025;
 const PINCH_UP_THRESHOLD = 0.05;
@@ -60,6 +63,44 @@ function showPressFlash(x, y) {
     [{ opacity: 0.95, transform: "translate(-50%, -50%) scale(1)" }, { opacity: 0, transform: "translate(-50%, -50%) scale(16)" }],
     { duration: 260, easing: "ease-out" }
   );
+}
+
+async function sendMouseEvent(type, x, y) {
+  // The helper is local-only and maps normalized coordinates to the main display.
+  if (!bridgeOnline && type === "move") return;
+
+  try {
+    const response = await fetch(BRIDGE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, x, y }),
+      keepalive: type !== "move",
+    });
+    if (!response.ok) throw new Error(`GestureMouse returned ${response.status}`);
+    if (!bridgeOnline) {
+      bridgeOnline = true;
+      webStatus.textContent = "Native mouse control: connected";
+    }
+  } catch {
+    if (bridgeOnline) {
+      bridgeOnline = false;
+      webStatus.textContent = "Native mouse control: disconnected (page controls still work)";
+    }
+  }
+}
+
+async function checkBridge() {
+  try {
+    const response = await fetch("http://127.0.0.1:8765/status");
+    const status = await response.json();
+    bridgeOnline = status.accessibility === true;
+    webStatus.textContent = bridgeOnline
+      ? "Native mouse control: connected"
+      : "Native mouse control: Accessibility permission required";
+  } catch {
+    bridgeOnline = false;
+    webStatus.textContent = "Native mouse control: open GestureMouse to enable it";
+  }
 }
 
 function getGestureTarget(x, y) {
@@ -98,18 +139,26 @@ function releaseWebPress(x, y) {
   pressedTarget = null;
   pinchHeld = false;
   cursor.classList.remove("is-pinching");
+  void sendMouseEvent("up", lastCursorX, lastCursorY);
 }
 
 function updateWebPointer(x, y, pinch) {
   const isPinching = pinchHeld ? pinch < PINCH_UP_THRESHOLD : pinch < PINCH_DOWN_THRESHOLD;
   const target = getGestureTarget(x, y);
   setHoveredTarget(target);
+  const now = performance.now();
+
+  if (now - lastBridgeSend > 20 || isPinching !== pinchHeld) {
+    lastBridgeSend = now;
+    void sendMouseEvent("move", lastCursorX, lastCursorY);
+  }
 
   if (isPinching && !pinchHeld) {
     pinchHeld = true;
     pressedTarget = target;
     cursor.classList.add("is-pinching");
     showPressFlash(x, y);
+    void sendMouseEvent("down", lastCursorX, lastCursorY);
 
     if (target?.hasAttribute("data-gesture-draggable")) {
       draggingNote = target;
@@ -295,4 +344,4 @@ document.querySelectorAll("[data-gesture-action]").forEach((button) => {
   });
 });
 
-webStatus.textContent = "Runs inside this browser tab";
+checkBridge();
