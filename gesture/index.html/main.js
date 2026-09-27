@@ -89,7 +89,7 @@ function releaseWebPress(x, y) {
   const releaseTarget = getGestureTarget(x, y);
   if (draggingNote) {
     draggingNote.classList.remove("is-gesture-grabbed");
-    actionStatus.textContent = "Note placed. Pinch and hold it again to keep exploring.";
+    actionStatus.textContent = "Card placed. Pinch it again if you want to move it.";
   } else if (pressedTarget && pressedTarget === releaseTarget) {
     pressedTarget.click();
   }
@@ -117,12 +117,12 @@ function updateWebPointer(x, y, pinch) {
       dragOffsetX = x - noteBounds.left;
       dragOffsetY = y - noteBounds.top;
       draggingNote.classList.add("is-gesture-grabbed");
-      actionStatus.textContent = "Holding the note. Move your thumb while pinching to drag it.";
+      actionStatus.textContent = "Card grabbed. Keep pinching while you move your thumb.";
     } else if (target) {
       target.classList.add("is-gesture-pressed");
-      actionStatus.textContent = "Pressed. Release your pinch to activate it.";
+      actionStatus.textContent = "Control pressed. Release the pinch to activate it.";
     } else {
-      actionStatus.textContent = "Pressed. Move over a control, then release to activate it.";
+      actionStatus.textContent = "Pinch detected. Move onto a control and release.";
     }
   } else if (!isPinching && pinchHeld) {
     releaseWebPress(x, y);
@@ -210,7 +210,7 @@ async function startCamera() {
       }
       thumbTrackingInitialized = false;
       seenHand = false;
-      handStatus.textContent = "Waiting for hand";
+      handStatus.textContent = "Show one hand to begin";
       handDot.style.background = "var(--danger)";
       cursor.style.opacity = "0";
       return;
@@ -218,7 +218,7 @@ async function startCamera() {
 
     const landmarks = results.multiHandLandmarks[0];
     seenHand = true;
-    handStatus.textContent = "Hand tracked";
+    handStatus.textContent = "Hand found";
     handDot.style.background = "var(--success)";
     drawHandOverlay(landmarks);
 
@@ -258,7 +258,7 @@ async function startCamera() {
   try {
     await camera.start();
     resizeCanvas();
-    cameraStatus.textContent = "Camera running";
+    cameraStatus.textContent = "Camera on";
     cameraDot.style.background = "var(--success)";
   } catch (error) {
     console.error(error);
@@ -275,7 +275,7 @@ mirrorPreview.addEventListener("change", () => {
 });
 sensitivity.addEventListener("input", () => {
   cursorGain = Number(sensitivity.value);
-  sensitivityValue.textContent = `${cursorGain.toFixed(2)}x base`;
+  sensitivityValue.textContent = `${cursorGain.toFixed(2)}x`;
   activeGain.textContent = `${cursorGain.toFixed(2)}x`;
 });
 
@@ -285,14 +285,14 @@ document.querySelectorAll("[data-gesture-action]").forEach((button) => {
       interactionLab.classList.remove("is-pulsing");
       void interactionLab.offsetWidth;
       interactionLab.classList.add("is-pulsing");
-      actionStatus.textContent = "Surface pulsed. Pinch the color button for another response.";
+      actionStatus.textContent = "Pulse worked. Try changing the color next.";
     } else {
       interactionLab.classList.toggle("is-warm");
       actionStatus.textContent = interactionLab.classList.contains("is-warm")
-        ? "Color shifted to ember mode."
-        : "Color returned to ocean mode.";
+        ? "Color changed to ember."
+        : "Color changed back to ocean.";
     }
   });
 });
 
-webStatus.textContent = "Browser-only mode: no helper or Accessibility access needed";
+webStatus.textContent = "Runs inside this browser tab";
