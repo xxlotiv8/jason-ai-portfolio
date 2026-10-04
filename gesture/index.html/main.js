@@ -1,347 +1,369 @@
-const video = document.getElementById("video");
-const overlay = document.getElementById("overlay");
-const cameraShell = document.querySelector(".camera-shell");
-const ctx = overlay.getContext("2d");
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js";
+
+const canvas = document.getElementById("scene");
+const frame = document.getElementById("sceneFrame");
+const emptyState = document.getElementById("sceneEmpty");
+const objectCount = document.getElementById("objectCount");
+const actionStatus = document.getElementById("actionStatus");
 const cursor = document.getElementById("cursor");
-const clickFlash = document.getElementById("clickFlash");
 const startButton = document.getElementById("startButton");
 const cameraStatus = document.getElementById("cameraStatus");
-const handStatus = document.getElementById("handStatus");
 const cameraDot = document.getElementById("cameraDot");
-const handDot = document.getElementById("handDot");
-const pointerX = document.getElementById("pointerX");
-const pointerY = document.getElementById("pointerY");
-const pinchDistance = document.getElementById("pinchDistance");
-const webStatus = document.getElementById("webStatus");
-const interactionLab = document.getElementById("interactionLab");
-const actionStatus = document.getElementById("actionStatus");
-const mirrorPreview = document.getElementById("mirrorPreview");
-const sensitivity = document.getElementById("sensitivity");
-const sensitivityValue = document.getElementById("sensitivityValue");
-const activeGain = document.getElementById("activeGain");
+const clearButton = document.getElementById("clearButton");
+const video = document.getElementById("video");
 
-let camera;
-let smoothedX = 0.5;
-let smoothedY = 0.5;
-let seenHand = false;
-let pinchHeld = false;
-let bridgeOnline = false;
-let lastBridgeSend = 0;
-let previewMirrored = false;
-let lastCursorX = 0.5;
-let lastCursorY = 0.5;
-let lastThumbX = 0.5;
-let lastThumbY = 0.5;
-let lastThumbAt = performance.now();
-let thumbTrackingInitialized = false;
-let pressedTarget = null;
-let draggingNote = null;
-let dragOffsetX = 0;
-let dragOffsetY = 0;
-let hoveredTarget = null;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+camera.position.set(0, 2.7, 16);
+const cameraTarget = new THREE.Vector3(0, 0, 0);
+camera.lookAt(cameraTarget);
 
-const BRIDGE_URL = "http://127.0.0.1:8765/event";
-let cursorGain = Number(sensitivity.value);
-const PINCH_DOWN_THRESHOLD = 0.025;
-const PINCH_UP_THRESHOLD = 0.05;
-const THUMB_DEAD_ZONE = 0.0018;
-const MIN_SMOOTHING = 0.1;
-const MAX_SMOOTHING = 0.5;
-const MAX_SPEED_BOOST = 1.5;
-const SPEED_ACCELERATION = 3.5;
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.12;
 
-function resizeCanvas() {
-  const rect = video.getBoundingClientRect();
-  overlay.width = Math.round(rect.width * window.devicePixelRatio);
-  overlay.height = Math.round(rect.height * window.devicePixelRatio);
+scene.add(new THREE.HemisphereLight(0xf9f7ef, 0x879a8c, 2.1));
+const keyLight = new THREE.DirectionalLight(0xffffff, 3.2);
+keyLight.position.set(-4, 7, 9);
+scene.add(keyLight);
+const greenLight = new THREE.PointLight(0x4c986e, 18, 24);
+greenLight.position.set(4, -3, 5);
+scene.add(greenLight);
+
+const objectGroup = new THREE.Group();
+scene.add(objectGroup);
+
+const palette = [0x276b48, 0x83a18b, 0xd1a972, 0x9b6a51, 0x687d70];
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+const dragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+let objects = [];
+let cameraController;
+let hands;
+let handControlActive = false;
+let twoHandShape = null;
+let cameraMoveLastPoint = null;
+let cameraRotateLastPoint = null;
+let animationFrame = 0;
+let lastStatusAt = 0;
+
+function resizeScene() {
+  const bounds = frame.getBoundingClientRect();
+  if (!bounds.width || !bounds.height) return;
+  camera.aspect = bounds.width / bounds.height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(bounds.width, bounds.height, false);
 }
 
-function showPressFlash(x, y) {
-  clickFlash.style.left = `${x}px`;
-  clickFlash.style.top = `${y}px`;
-  clickFlash.animate(
-    [{ opacity: 0.95, transform: "translate(-50%, -50%) scale(1)" }, { opacity: 0, transform: "translate(-50%, -50%) scale(16)" }],
-    { duration: 260, easing: "ease-out" }
+function pointOnScene(clientX, clientY) {
+  const bounds = frame.getBoundingClientRect();
+  pointer.x = ((clientX - bounds.left) / bounds.width) * 2 - 1;
+  pointer.y = -((clientY - bounds.top) / bounds.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const point = new THREE.Vector3();
+  return raycaster.ray.intersectPlane(dragPlane, point) || new THREE.Vector3();
+}
+
+function updatePointer(clientX, clientY) {
+  const bounds = frame.getBoundingClientRect();
+  cursor.style.left = `${clientX - bounds.left}px`;
+  cursor.style.top = `${clientY - bounds.top}px`;
+  cursor.style.opacity = "1";
+}
+
+function updateObjectCount() {
+  objectCount.textContent = `${String(objects.length).padStart(2, "0")} ${objects.length === 1 ? "OBJECT" : "OBJECTS"}`;
+  emptyState.classList.toggle("is-hidden", objects.length > 0);
+}
+
+function makeMaterial(color) {
+  return new THREE.MeshStandardMaterial({
+    color,
+    roughness: 0.3,
+    metalness: 0.12,
+    emissive: color,
+    emissiveIntensity: 0.035,
+  });
+}
+
+function createHandBox(position) {
+  const color = palette[Math.floor(Math.random() * palette.length)];
+  const box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), makeMaterial(color));
+  box.position.copy(position);
+  box.scale.set(0.16, 0.16, 0.16);
+  objectGroup.add(box);
+  objects.push(box);
+  updateObjectCount();
+  return box;
+}
+
+function resizeHandBox(box, firstPoint, secondPoint) {
+  const width = THREE.MathUtils.clamp(Math.abs(secondPoint.x - firstPoint.x), 0.18, 8);
+  const height = THREE.MathUtils.clamp(Math.abs(secondPoint.y - firstPoint.y), 0.18, 8);
+  const depth = THREE.MathUtils.clamp(Math.min(width, height) * 0.8, 0.18, 6);
+  box.position.set(
+    (firstPoint.x + secondPoint.x) / 2,
+    (firstPoint.y + secondPoint.y) / 2,
+    0,
   );
+  box.scale.set(width, height, depth);
 }
 
-async function sendMouseEvent(type, x, y) {
-  // The helper is local-only and maps normalized coordinates to the main display.
-  if (!bridgeOnline && type === "move") return;
+function isPointingUp(landmarks) {
+  const indexExtended = landmarks[8].y < landmarks[6].y - 0.075;
+  const otherFingersCurled = [[12, 10], [16, 14], [20, 18]]
+    .every(([tip, joint]) => landmarks[tip].y > landmarks[joint].y - 0.015);
+  return indexExtended && otherFingersCurled;
+}
 
-  try {
-    const response = await fetch(BRIDGE_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ type, x, y }),
-      keepalive: type !== "move",
-    });
-    if (!response.ok) throw new Error(`GestureMouse returned ${response.status}`);
-    if (!bridgeOnline) {
-      bridgeOnline = true;
-      webStatus.textContent = "Native mouse control: connected";
-    }
-  } catch {
-    if (bridgeOnline) {
-      bridgeOnline = false;
-      webStatus.textContent = "Native mouse control: disconnected (page controls still work)";
-    }
+function isPeaceSign(landmarks) {
+  const indexExtended = landmarks[8].y < landmarks[6].y - 0.065;
+  const middleExtended = landmarks[12].y < landmarks[10].y - 0.065;
+  const remainingFingersCurled = [[16, 14], [20, 18]]
+    .every(([tip, joint]) => landmarks[tip].y > landmarks[joint].y - 0.015);
+  return indexExtended && middleExtended && remainingFingersCurled;
+}
+
+function moveCameraFromHand(landmarks) {
+  const handPoint = makeHandPosition(landmarks[9]);
+  if (cameraMoveLastPoint) {
+    const bounds = frame.getBoundingClientRect();
+    const visibleHeight = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.distanceTo(cameraTarget);
+    const visibleWidth = visibleHeight * camera.aspect;
+    const dx = handPoint.x - cameraMoveLastPoint.x;
+    const dy = handPoint.y - cameraMoveLastPoint.y;
+    const shiftX = -dx / bounds.width * visibleWidth;
+    const shiftY = dy / bounds.height * visibleHeight;
+    camera.position.x += shiftX;
+    camera.position.y += shiftY;
+    cameraTarget.x += shiftX;
+    cameraTarget.y += shiftY;
+    camera.lookAt(cameraTarget);
   }
+  cameraMoveLastPoint = handPoint;
 }
 
-async function checkBridge() {
-  try {
-    const response = await fetch("http://127.0.0.1:8765/status");
-    const status = await response.json();
-    bridgeOnline = status.accessibility === true;
-    webStatus.textContent = bridgeOnline
-      ? "Native mouse control: connected"
-      : "Native mouse control: Accessibility permission required";
-  } catch {
-    bridgeOnline = false;
-    webStatus.textContent = "Native mouse control: open GestureMouse to enable it";
+function rotateCameraFromHand(landmarks) {
+  const handPoint = makeHandPosition(landmarks[9]);
+  if (cameraRotateLastPoint) {
+    const bounds = frame.getBoundingClientRect();
+    const dx = (handPoint.x - cameraRotateLastPoint.x) / bounds.width;
+    const dy = (handPoint.y - cameraRotateLastPoint.y) / bounds.height;
+    const offset = camera.position.clone().sub(cameraTarget);
+    const orbit = new THREE.Spherical().setFromVector3(offset);
+    orbit.theta -= dx * Math.PI * 1.5;
+    orbit.phi = THREE.MathUtils.clamp(orbit.phi + dy * Math.PI, 0.22, Math.PI - 0.22);
+    camera.position.setFromSpherical(orbit).add(cameraTarget);
+    camera.lookAt(cameraTarget);
   }
+  cameraRotateLastPoint = handPoint;
 }
 
-function getGestureTarget(x, y) {
-  const element = document.elementFromPoint(x, y);
-  return element?.closest("button, [data-gesture-draggable]") ?? null;
-}
-
-function setHoveredTarget(target) {
-  if (hoveredTarget === target) return;
-  hoveredTarget?.classList.remove("is-gesture-hovered");
-  hoveredTarget = target;
-  hoveredTarget?.classList.add("is-gesture-hovered");
-}
-
-function moveDraggedNote(x, y) {
-  if (!draggingNote) return;
-  const labBounds = interactionLab.getBoundingClientRect();
-  const noteBounds = draggingNote.getBoundingClientRect();
-  const left = clamp(x - labBounds.left - dragOffsetX, 0, Math.max(0, labBounds.width - noteBounds.width));
-  const top = clamp(y - labBounds.top - dragOffsetY, 106, Math.max(106, labBounds.height - noteBounds.height));
-  draggingNote.style.left = `${left}px`;
-  draggingNote.style.top = `${top}px`;
-}
-
-function releaseWebPress(x, y) {
-  if (!pinchHeld) return;
-  const releaseTarget = getGestureTarget(x, y);
-  if (draggingNote) {
-    draggingNote.classList.remove("is-gesture-grabbed");
-    actionStatus.textContent = "Card placed. Pinch it again if you want to move it.";
-  } else if (pressedTarget && pressedTarget === releaseTarget) {
-    pressedTarget.click();
+function clearObjects() {
+  for (const mesh of objects) {
+    objectGroup.remove(mesh);
+    mesh.geometry.dispose();
+    mesh.material.dispose();
   }
-  pressedTarget?.classList.remove("is-gesture-pressed");
-  draggingNote = null;
-  pressedTarget = null;
-  pinchHeld = false;
-  cursor.classList.remove("is-pinching");
-  void sendMouseEvent("up", lastCursorX, lastCursorY);
+  objects = [];
+  twoHandShape = null;
+  cameraMoveLastPoint = null;
+  cameraRotateLastPoint = null;
+  updateObjectCount();
+  actionStatus.textContent = "Space cleared. Pinch with both hands to set two corners and create a box.";
 }
 
-function updateWebPointer(x, y, pinch) {
-  const isPinching = pinchHeld ? pinch < PINCH_UP_THRESHOLD : pinch < PINCH_DOWN_THRESHOLD;
-  const target = getGestureTarget(x, y);
-  setHoveredTarget(target);
-  const now = performance.now();
+function getScenePoint(clientX, clientY) {
+  return pointOnScene(clientX, clientY);
+}
 
-  if (now - lastBridgeSend > 20 || isPinching !== pinchHeld) {
-    lastBridgeSend = now;
-    void sendMouseEvent("move", lastCursorX, lastCursorY);
-  }
+function endTwoHandShape() {
+  if (!twoHandShape) return;
+  twoHandShape = null;
+  cameraStatus.textContent = "Box placed";
+  actionStatus.textContent = "Box placed. Pinch with both hands to make another.";
+}
 
-  if (isPinching && !pinchHeld) {
-    pinchHeld = true;
-    pressedTarget = target;
-    cursor.classList.add("is-pinching");
-    showPressFlash(x, y);
-    void sendMouseEvent("down", lastCursorX, lastCursorY);
+function makeHandPosition(landmark) {
+  const bounds = frame.getBoundingClientRect();
+  // Mirror the raw camera x-coordinate once so hand movement feels like a mirror.
+  const x = (1 - landmark.x) * bounds.width;
+  const y = landmark.y * bounds.height;
+  return { x: bounds.left + x, y: bounds.top + y };
+}
 
-    if (target?.hasAttribute("data-gesture-draggable")) {
-      draggingNote = target;
-      const noteBounds = draggingNote.getBoundingClientRect();
-      dragOffsetX = x - noteBounds.left;
-      dragOffsetY = y - noteBounds.top;
-      draggingNote.classList.add("is-gesture-grabbed");
-      actionStatus.textContent = "Card grabbed. Keep pinching while you move your thumb.";
-    } else if (target) {
-      target.classList.add("is-gesture-pressed");
-      actionStatus.textContent = "Control pressed. Release the pinch to activate it.";
+function onHandResults(results) {
+  if (!handControlActive) return;
+  const detectedHands = results.multiHandLandmarks || [];
+  if (detectedHands.length < 2) {
+    endTwoHandShape();
+    if (detectedHands.length === 1 && isPeaceSign(detectedHands[0])) {
+      cameraMoveLastPoint = null;
+      cursor.style.opacity = "0";
+      cameraStatus.textContent = "Rotating view — lower your hand to stop";
+      actionStatus.textContent = "Hold a peace sign and move your hand to orbit the camera.";
+      rotateCameraFromHand(detectedHands[0]);
+    } else if (detectedHands.length === 1 && isPointingUp(detectedHands[0])) {
+      cameraRotateLastPoint = null;
+      cursor.style.opacity = "0";
+      cameraStatus.textContent = "Moving view — lower your finger to stop";
+      actionStatus.textContent = "Point one index finger upward and move your hand to pan the view.";
+      moveCameraFromHand(detectedHands[0]);
     } else {
-      actionStatus.textContent = "Pinch detected. Move onto a control and release.";
+      cameraMoveLastPoint = null;
+      cameraRotateLastPoint = null;
+      cursor.style.opacity = "0";
+      const now = performance.now();
+      if (now - lastStatusAt > 700) {
+        cameraStatus.textContent = detectedHands.length ? "Show your second hand" : "Show both hands to begin";
+        actionStatus.textContent = "Pinch with both hands to create a box; point up to pan or make a peace sign to rotate the view.";
+        lastStatusAt = now;
+      }
     }
-  } else if (!isPinching && pinchHeld) {
-    releaseWebPress(x, y);
-  } else if (pinchHeld) {
-    moveDraggedNote(x, y);
+    return;
   }
-}
+  cameraMoveLastPoint = null;
+  cameraRotateLastPoint = null;
 
-function clamp(value, min = 0, max = 1) {
-  return Math.min(max, Math.max(min, value));
-}
+  const handsOnScreen = detectedHands.slice(0, 2).map((landmarks) => {
+    const thumb = makeHandPosition(landmarks[4]);
+    const index = makeHandPosition(landmarks[8]);
+    const pinchDistance = Math.hypot(index.x - thumb.x, index.y - thumb.y) / Math.min(frame.clientWidth, frame.clientHeight);
+    return {
+      point: { x: (thumb.x + index.x) / 2, y: (thumb.y + index.y) / 2 },
+      pinching: pinchDistance < 0.09,
+    };
+  }).sort((a, b) => a.point.x - b.point.x);
+  const leftHand = handsOnScreen[0];
+  const rightHand = handsOnScreen[1];
 
-function smoothThumbPosition(thumbTip) {
-  const now = performance.now();
-  if (!thumbTrackingInitialized) {
-    smoothedX = thumbTip.x;
-    smoothedY = thumbTip.y;
-    lastThumbX = thumbTip.x;
-    lastThumbY = thumbTip.y;
-    lastThumbAt = now;
-    thumbTrackingInitialized = true;
-    return { deltaX: 0, deltaY: 0, gain: cursorGain };
-  }
-
-  const elapsed = Math.max(1, now - lastThumbAt);
-  const rawDistance = Math.hypot(thumbTip.x - lastThumbX, thumbTip.y - lastThumbY);
-  const thumbSpeed = Math.max(0, rawDistance - THUMB_DEAD_ZONE) / elapsed * 1000;
-  const distance = Math.hypot(thumbTip.x - smoothedX, thumbTip.y - smoothedY);
-  const previousX = smoothedX;
-  const previousY = smoothedY;
-
-  if (distance > THUMB_DEAD_ZONE) {
-    const smoothing = Math.min(MAX_SMOOTHING, MIN_SMOOTHING + distance * 6);
-    smoothedX += (thumbTip.x - smoothedX) * smoothing;
-    smoothedY += (thumbTip.y - smoothedY) * smoothing;
-  }
-
-  lastThumbX = thumbTip.x;
-  lastThumbY = thumbTip.y;
-  lastThumbAt = now;
-
-  // Slow movement stays precise; fast movement expands the reachable screen area.
-  return {
-    deltaX: smoothedX - previousX,
-    deltaY: smoothedY - previousY,
-    gain: cursorGain * (1 + Math.min(MAX_SPEED_BOOST, thumbSpeed * SPEED_ACCELERATION)),
-  };
-}
-
-function drawHandOverlay(landmarks) {
-  const width = overlay.width;
-  const height = overlay.height;
-  ctx.clearRect(0, 0, width, height);
-
-  window.drawConnectors(ctx, landmarks, HAND_CONNECTIONS, { color: "rgba(100, 210, 255, 0.85)", lineWidth: 4 });
-  window.drawLandmarks(ctx, landmarks, { color: "rgba(255, 255, 255, 0.9)", lineWidth: 2, radius: 4 });
-}
-
-async function startCamera() {
-  if (!navigator.mediaDevices?.getUserMedia) {
-    cameraStatus.textContent = "Camera not supported";
-    cameraDot.style.background = "var(--danger)";
+  if (!leftHand.pinching || !rightHand.pinching) {
+    endTwoHandShape();
+    cameraStatus.textContent = "Pinch with both hands";
+    actionStatus.textContent = "Pinch with both hands and drag the two points to set a box's corners.";
+    updatePointer((leftHand.point.x + rightHand.point.x) / 2, (leftHand.point.y + rightHand.point.y) / 2);
     return;
   }
 
-  const hands = new Hands({
-    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
-  });
+  const leftPoint = getScenePoint(leftHand.point.x, leftHand.point.y);
+  const rightPoint = getScenePoint(rightHand.point.x, rightHand.point.y);
+  const midpoint = leftPoint.clone().add(rightPoint).multiplyScalar(0.5);
+  if (!twoHandShape) {
+    twoHandShape = createHandBox(midpoint);
+  }
 
-  hands.setOptions({
-    maxNumHands: 1,
-    modelComplexity: 1,
-    selfieMode: false,
-    minDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.6,
-  });
+  resizeHandBox(twoHandShape, leftPoint, rightPoint);
+  cameraStatus.textContent = "Sizing box — release to place";
+  actionStatus.textContent = "Move the two pinch points to set the box's opposite corners.";
+}
 
-  hands.onResults((results) => {
-    resizeCanvas();
-    ctx.clearRect(0, 0, overlay.width, overlay.height);
+async function enableHandControl() {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    cameraStatus.textContent = "Camera access is not supported here";
+    return;
+  }
+  startButton.disabled = true;
+  startButton.textContent = "Starting…";
+  cameraStatus.textContent = "Waiting for camera permission";
 
-    if (!results.multiHandLandmarks?.length) {
-      if (pinchHeld) {
-        releaseWebPress(lastCursorX * window.innerWidth, lastCursorY * window.innerHeight);
-      }
-      thumbTrackingInitialized = false;
-      seenHand = false;
-      handStatus.textContent = "Show one hand to begin";
-      handDot.style.background = "var(--danger)";
-      cursor.style.opacity = "0";
-      return;
-    }
-
-    const landmarks = results.multiHandLandmarks[0];
-    seenHand = true;
-    handStatus.textContent = "Hand found";
-    handDot.style.background = "var(--success)";
-    drawHandOverlay(landmarks);
-
-    const indexTip = landmarks[8];
-    const thumbTip = landmarks[4];
-    const dx = indexTip.x - thumbTip.x;
-    const dy = indexTip.y - thumbTip.y;
-    const pinch = Math.hypot(dx, dy);
-
-    const thumbMotion = smoothThumbPosition(thumbTip);
-    activeGain.textContent = `${thumbMotion.gain.toFixed(2)}x`;
-
-    lastCursorX = clamp(lastCursorX + (previewMirrored ? -thumbMotion.deltaX : thumbMotion.deltaX) * thumbMotion.gain);
-    lastCursorY = clamp(lastCursorY + thumbMotion.deltaY * thumbMotion.gain);
-    const x = lastCursorX * window.innerWidth;
-    const y = lastCursorY * window.innerHeight;
-
-    cursor.style.left = `${x}px`;
-    cursor.style.top = `${y}px`;
-    cursor.style.opacity = "1";
-
-    pointerX.textContent = x.toFixed(0);
-    pointerY.textContent = y.toFixed(0);
-    pinchDistance.textContent = pinch.toFixed(3);
-
-    updateWebPointer(x, y, pinch);
-  });
-
-  camera = new Camera(video, {
-    onFrame: async () => {
-      await hands.send({ image: video });
-    },
-    width: 1280,
-    height: 800,
-  });
+  hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+  hands.setOptions({ maxNumHands: 2, modelComplexity: 1, selfieMode: false, minDetectionConfidence: 0.7, minTrackingConfidence: 0.6 });
+  hands.onResults(onHandResults);
+  cameraController = new Camera(video, { onFrame: async () => hands.send({ image: video }), width: 960, height: 540 });
 
   try {
-    await camera.start();
-    resizeCanvas();
-    cameraStatus.textContent = "Camera on";
-    cameraDot.style.background = "var(--success)";
+    await cameraController.start();
+    handControlActive = true;
+    cameraDot.classList.add("is-active");
+    cameraStatus.textContent = "Camera ready — show both hands";
+    startButton.innerHTML = "Stop hand control";
+    actionStatus.textContent = "Pinch with both hands to create a box; point up to pan or make a peace sign to rotate the view.";
   } catch (error) {
     console.error(error);
-    cameraStatus.textContent = "Camera permission denied";
-    cameraDot.style.background = "var(--danger)";
+    cameraStatus.textContent = "Camera permission was not granted";
+    startButton.innerHTML = "Try again <span>↗</span>";
+  } finally {
+    startButton.disabled = false;
   }
 }
 
-startButton.addEventListener("click", startCamera);
-window.addEventListener("resize", resizeCanvas);
-mirrorPreview.addEventListener("change", () => {
-  previewMirrored = mirrorPreview.checked;
-  cameraShell.classList.toggle("is-mirrored", previewMirrored);
-});
-sensitivity.addEventListener("input", () => {
-  cursorGain = Number(sensitivity.value);
-  sensitivityValue.textContent = `${cursorGain.toFixed(2)}x`;
-  activeGain.textContent = `${cursorGain.toFixed(2)}x`;
-});
+function disableHandControl() {
+  endTwoHandShape();
+  cameraMoveLastPoint = null;
+  cameraRotateLastPoint = null;
+  cameraController?.stop();
+  video.srcObject?.getTracks().forEach((track) => track.stop());
+  handControlActive = false;
+  cameraDot.classList.remove("is-active");
+  cameraStatus.textContent = "Camera off";
+  startButton.innerHTML = "Enable hand control <span>↗</span>";
+  cursor.style.opacity = "0";
+}
 
-document.querySelectorAll("[data-gesture-action]").forEach((button) => {
-  button.addEventListener("click", () => {
-    if (button.dataset.gestureAction === "pulse") {
-      interactionLab.classList.remove("is-pulsing");
-      void interactionLab.offsetWidth;
-      interactionLab.classList.add("is-pulsing");
-      actionStatus.textContent = "Pulse worked. Try changing the color next.";
-    } else {
-      interactionLab.classList.toggle("is-warm");
-      actionStatus.textContent = interactionLab.classList.contains("is-warm")
-        ? "Color changed to ember."
-        : "Color changed back to ocean.";
-    }
-  });
-});
+function updateThemeColors() {
+  const dark = document.documentElement.dataset.theme === "dark";
+  scene.background = new THREE.Color(dark ? 0x202922 : 0xe9e8df);
+  const gridColor = new THREE.Color(dark ? 0x69756a : 0x9ca99b);
+  const gridOpacity = dark ? 0.27 : 0.22;
+  grid.material.color.copy(gridColor);
+  grid.material.opacity = gridOpacity;
+  gridLines.material.color.copy(gridColor);
+  gridLines.material.opacity = gridOpacity;
+  particles.material.color.setHex(dark ? 0xc7d2c7 : 0x526b58);
+}
 
-checkBridge();
+const grid = new THREE.GridHelper(32, 32, 0x9ca99b, 0x9ca99b);
+grid.rotation.x = Math.PI / 2;
+grid.position.z = -1.8;
+grid.material.transparent = true;
+grid.material.opacity = 0.22;
+scene.add(grid);
+
+const gridLinesGeometry = new THREE.BufferGeometry();
+const linePoints = [];
+for (let x = -11; x <= 11; x += 1) {
+  linePoints.push(x, -7, -1.9, x, 7, -1.9);
+}
+for (let y = -7; y <= 7; y += 1) {
+  linePoints.push(-11, y, -1.9, 11, y, -1.9);
+}
+gridLinesGeometry.setAttribute("position", new THREE.Float32BufferAttribute(linePoints, 3));
+const gridLines = new THREE.LineSegments(gridLinesGeometry, new THREE.LineBasicMaterial({ color: 0x9ca99b, transparent: true, opacity: 0.22 }));
+scene.add(gridLines);
+
+const particleGeometry = new THREE.BufferGeometry();
+const particlePositions = [];
+for (let i = 0; i < 150; i += 1) {
+  particlePositions.push((Math.random() - 0.5) * 23, (Math.random() - 0.5) * 14, -2.2 - Math.random() * 0.4);
+}
+particleGeometry.setAttribute("position", new THREE.Float32BufferAttribute(particlePositions, 3));
+const particles = new THREE.Points(particleGeometry, new THREE.PointsMaterial({ color: 0x526b58, size: 0.035, transparent: true, opacity: 0.55 }));
+scene.add(particles);
+
+function animate() {
+  animationFrame = requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+startButton.addEventListener("click", () => {
+  if (handControlActive) disableHandControl();
+  else void enableHandControl();
+});
+clearButton.addEventListener("click", clearObjects);
+window.addEventListener("resize", resizeScene);
+document.querySelector(".theme-toggle")?.addEventListener("click", () => requestAnimationFrame(updateThemeColors));
+new MutationObserver(updateThemeColors).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+resizeScene();
+updateThemeColors();
+updateObjectCount();
+animate();
+
+window.addEventListener("pagehide", () => {
+  cancelAnimationFrame(animationFrame);
+  cameraController?.stop();
+  video.srcObject?.getTracks().forEach((track) => track.stop());
+});

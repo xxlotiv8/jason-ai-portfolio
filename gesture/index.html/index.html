@@ -3,47 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f4ef" />
     <title>Hand Gesture Control — Jason</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="../../styles.css?v=gesture-3d-1" />
+    <script src="../../theme.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
   </head>
   <body>
-    <main class="app">
-      <section class="hero">
-        <div>
-          <p class="eyebrow">Computer vision / interaction</p>
-          <h1>Move the cursor with your hand.</h1>
-          <p class="lede">I built this experiment to test a simple question: can a hand gesture feel natural enough to control a real web page? Move your thumb to steer, then pinch to press or drag.</p>
+    <header class="site-header">
+      <a class="brand" href="../../index.html#top" aria-label="Jason home">JASON<span class="brand-dot">.</span></a>
+      <nav aria-label="Primary navigation">
+        <a href="../../index.html#about">About</a>
+        <a href="../../index.html#work">Work</a>
+        <a href="../../videos.html">Videos</a>
+        <a href="../../guestbook.html">Messages</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme">
+        <svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path></svg>
+        <svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 15.2A8.5 8.5 0 0 1 8.8 3.6 8.5 8.5 0 1 0 20.4 15.2Z"></path></svg>
+      </button>
+      <a class="guestbook-cta" href="../../index.html#work">Back to projects <span>↗</span></a>
+    </header>
+
+    <main class="gesture-page" id="top">
+      <section class="gesture-hero section-shell">
+        <div class="gesture-intro">
+          <p class="eyebrow"><span></span>Hand Gesture Control / 3D experiment</p>
+          <h1>Make a little space.</h1>
+          <p class="hero-text">Start with an empty space. Pinch with both hands to place two corners, then drag them into a 3D box. Point one finger up to pan; make a peace sign to rotate the view. Your camera view stays hidden.</p>
         </div>
-        <div class="status-card">
-          <div class="status-row"><span class="dot" id="cameraDot"></span><span id="cameraStatus">Camera off</span></div>
-          <div class="status-row"><span class="dot" id="handDot"></span><span id="handStatus">Show one hand to begin</span></div>
-          <div class="hint">Pinch to press. Hold the pinch to drag.</div>
-        </div>
-      </section>
-      <section class="workspace">
-        <div class="camera-shell"><video id="video" playsinline muted></video><canvas id="overlay"></canvas></div>
-        <aside class="panel">
-          <h2>How it works</h2>
-          <ul><li><strong>Move your thumb</strong> to steer the cursor.</li><li><strong>Pinch</strong> to press a control.</li><li><strong>Keep pinching</strong> while moving to drag an item.</li></ul>
-          <div class="readout"><div><span>Pointer X</span><strong id="pointerX">0</strong></div><div><span>Pointer Y</span><strong id="pointerY">0</strong></div><div><span>Pinch distance</span><strong id="pinchDistance">0</strong></div><div><span>Live gain</span><strong id="activeGain">1.70x</strong></div></div>
-          <label class="sensitivity-control" for="sensitivity"><span>Cursor sensitivity <strong id="sensitivityValue">1.70x</strong></span><input id="sensitivity" type="range" min="0.8" max="2.6" value="1.7" step="0.05" /><small>Slow movement stays precise. Faster movement covers more of the page.</small></label>
-          <button id="startButton" type="button">Enable camera</button>
-          <label class="mirror-control"><input id="mirrorPreview" type="checkbox" /> Mirror preview</label>
-          <p class="bridge-status" id="webStatus">Ready in this browser tab</p>
-          <p class="fine-print">Good lighting and a centered hand make the tracking steadier.</p>
+        <aside class="how-card" aria-labelledby="how-title">
+          <p class="section-number">HOW IT WORKS</p>
+          <h2 id="how-title">Place. Shape. Move.</h2>
+          <ol>
+            <li><span>01</span><div><strong>Pinch two corners</strong><p>Hold a pinch with each hand to start a box.</p></div></li>
+            <li><span>02</span><div><strong>Drag to shape</strong><p>Move your hands to set the rectangle’s opposite corners; its depth follows the shorter side.</p></div></li>
+            <li><span>03</span><div><strong>Release to place</strong><p>Open either pinch. The box stays still where you leave it.</p></div></li>
+            <li><span>04</span><div><strong>Move the view</strong><p>Point one index finger up to pan, or hold a peace sign and move to rotate around the space.</p></div></li>
+          </ol>
         </aside>
       </section>
-      <section class="interaction-lab" id="interactionLab" aria-label="Browser gesture interaction lab">
-        <div class="lab-heading"><div><p class="eyebrow">Try it here</p><h2>Point. Pinch. Drag.</h2></div><p id="actionStatus" aria-live="polite">Enable the camera, then move the cursor onto a control.</p></div>
-        <div class="lab-actions"><button class="gesture-action" data-gesture-action="pulse" type="button">Test the pulse</button><button class="gesture-action secondary" data-gesture-action="color" type="button">Change the color</button></div>
-        <article class="gesture-note" id="gestureNote" data-gesture-draggable tabindex="0"><span class="note-grip" aria-hidden="true">Pinch and drag this card</span><h3>Hold the pinch.</h3><p>Move your thumb while pinching to place this card somewhere else.</p></article>
+
+      <section class="scene-section section-shell" aria-labelledby="scene-title">
+        <div class="scene-heading">
+          <div><p class="section-number">01 / ABSTRACT SPACE</p><h2 id="scene-title">Shape the space.</h2></div>
+          <div class="scene-tools">
+            <span class="camera-state"><i id="cameraDot"></i><span id="cameraStatus">Camera off</span></span>
+            <button class="control-button" id="startButton" type="button">Enable hand control <span>↗</span></button>
+          </div>
+        </div>
+        <div class="scene-frame" id="sceneFrame">
+          <canvas id="scene" aria-label="Interactive abstract 3D space. Pinch with both hands to set two corners of a 3D box."></canvas>
+          <div class="scene-cursor" id="cursor" aria-hidden="true"></div>
+          <div class="scene-overlay scene-overlay-top"><span>INTERACTIVE STUDY</span><span id="objectCount">00 OBJECTS</span></div>
+          <div class="scene-overlay scene-overlay-bottom"><span id="actionStatus" aria-live="polite">Pinch with both hands to set two corners and create a box.</span><span>PINCH TO SHAPE · POINT UP TO PAN · PEACE SIGN TO ROTATE</span></div>
+          <div class="scene-empty" id="sceneEmpty"><span class="empty-cross">+</span><span>Your space is ready</span></div>
+        </div>
+        <div class="scene-footer"><p class="privacy-note">Camera video stays hidden. Hand tracking runs in this browser tab.</p><button class="clear-button" id="clearButton" type="button">Clear objects</button></div>
       </section>
+
+      <section class="limits section-shell">
+        <p class="section-number">ABOUT THIS EXPERIMENT</p>
+        <div><h2>A small space to shape.</h2><p>Start from nothing. Hold both pinches to set opposite corners of a rectangular 3D box. Its thickness follows the shorter side. Point one index finger upward to pan, or hold a peace sign and move your hand to orbit the camera.</p></div>
+      </section>
+      <video id="video" class="tracking-video" playsinline muted aria-hidden="true"></video>
     </main>
-    <div id="cursor" aria-hidden="true"></div><div id="clickFlash" aria-hidden="true"></div>
-    <script type="module" src="./main.js?v=3488b0c"></script>
+
+    <footer class="site-footer">
+      <div class="footer-identity"><a class="brand" href="../../index.html#top">JASON<span class="brand-dot">.</span></a><nav class="footer-socials" aria-label="Social links"><a href="https://github.com/xxlotiv8" target="_blank" rel="noreferrer">GitHub ↗</a><a href="https://www.youtube.com/@Xlotiv8" target="_blank" rel="noreferrer">YouTube ↗</a><a href="https://x.com/xlotiv8" target="_blank" rel="noreferrer">X ↗</a><a href="https://www.instagram.com/xlotiv8/" target="_blank" rel="noreferrer">Instagram ↗</a></nav></div>
+      <div class="footer-column"><h2>About</h2><nav aria-label="About pages"><a href="../../index.html#about">About me</a><a href="../../index.html#hobbies">My hobbies</a></nav></div>
+      <div class="footer-column"><h2>Projects</h2><nav aria-label="Projects"><a href="../../index.html#work">All projects</a><a href="../../attention.html">Research notes</a><a href="../../videos.html">Video notes</a><a href="../../worlds.html">Minecraft worlds ↗</a></nav></div>
+      <div class="footer-column"><h2>More</h2><nav aria-label="More pages"><a href="../../guestbook.html">Messages</a><a href="#top">Back to top ↑</a></nav></div>
+    </footer>
+    <script type="module" src="./main.js?v=three-space-9"></script>
   </body>
 </html>

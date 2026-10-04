@@ -404,3 +404,51 @@ footer.site-footer { background: #fff; color: var(--ink); border-top-color: var(
   .video-summary-body { margin-top: 42px; }
   .two-column-list { columns: 1; }
 }
+
+/* Hand Gesture Control 3D experiment */
+.gesture-page { min-height: 100vh; }
+.section-number { margin: 0 0 18px; color: var(--accent); font-size: 10px; font-weight: 700; letter-spacing: .085em; text-transform: uppercase; }
+.gesture-hero { min-height: 470px; padding: 76px 0 70px; display: grid; grid-template-columns: 1.08fr .92fr; gap: 88px; align-items: center; }
+.gesture-intro h1 { max-width: 640px; margin-bottom: 24px; }
+.gesture-intro .hero-text { max-width: 570px; margin: 0; }
+.how-card { padding: 30px; border: 1px solid var(--line); background: var(--white); }
+.how-card h2, .scene-heading h2, .limits h2 { margin: 0; font-size: clamp(30px, 3.6vw, 46px); line-height: 1.04; letter-spacing: -.06em; }
+.how-card h2 { margin-bottom: 24px; font-size: clamp(28px, 3vw, 38px); }
+.how-card ol { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.how-card li { padding: 14px 0; display: grid; grid-template-columns: 34px 1fr; gap: 12px; border-bottom: 1px solid var(--line); }
+.how-card li > span { color: var(--muted); font-size: 10px; font-weight: 700; }
+.how-card strong { display: block; margin-bottom: 3px; font-size: 14px; }
+.how-card li p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
+.scene-section { padding: 50px 0 78px; border-top: 1px solid var(--line); }
+.scene-heading { margin-bottom: 22px; display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+.scene-heading .section-number { margin-bottom: 10px; }
+.scene-tools { display: flex; align-items: center; gap: 22px; }
+.camera-state { display: inline-flex; align-items: center; gap: 9px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.camera-state i { width: 8px; height: 8px; background: #a34b42; }
+.camera-state i.is-active { background: var(--accent); }
+.control-button { width: auto; min-height: 44px; padding: 12px 16px; border: 1px solid var(--accent); border-radius: 0; background: var(--accent); color: var(--white); font-size: 12px; font-weight: 800; cursor: pointer; }
+.control-button span { margin-left: 14px; }
+.control-button:hover { background: transparent; color: var(--accent); }
+.control-button:disabled { opacity: .65; cursor: wait; }
+.scene-frame { position: relative; height: clamp(360px, 53vw, 650px); overflow: hidden; border: 1px solid var(--line); background: var(--paper-deep); isolation: isolate; }
+#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; touch-action: none; }
+.scene-overlay { position: absolute; z-index: 2; left: 20px; right: 20px; display: flex; align-items: center; justify-content: space-between; gap: 20px; color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: .08em; pointer-events: none; }
+.scene-overlay-top { top: 17px; }
+.scene-overlay-bottom { bottom: 17px; text-transform: uppercase; }
+.scene-overlay-bottom span:first-child { text-transform: none; font-size: 11px; font-weight: 500; letter-spacing: 0; }
+.scene-cursor { position: absolute; z-index: 3; width: 20px; height: 20px; border: 2px solid var(--accent); border-radius: 50%; box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 16%, transparent); opacity: 0; transform: translate(-50%, -50%); pointer-events: none; transition: width .12s ease, height .12s ease, opacity .12s ease; }
+.scene-cursor.is-pinching { width: 14px; height: 14px; background: var(--accent); }
+.scene-empty { position: absolute; z-index: 1; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--muted); font-size: 12px; letter-spacing: .02em; pointer-events: none; transition: opacity .2s ease; }
+.scene-empty.is-hidden { opacity: 0; }
+.empty-cross { color: var(--accent); font-size: 38px; font-weight: 300; line-height: 1; }
+.scene-footer { padding-top: 15px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.privacy-note { margin: 0; color: var(--muted); font-size: 11px; }
+.clear-button { padding: 5px 0; border: 0; background: transparent; color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer; }
+.clear-button:hover { color: var(--accent); }
+.limits { padding: 72px 0 96px; display: grid; grid-template-columns: .45fr 1.55fr; gap: 72px; border-top: 1px solid var(--line); }
+.limits > div { max-width: 720px; }
+.limits p:last-child { max-width: 610px; margin: 20px 0 0; color: var(--muted); font-size: 15px; line-height: 1.75; }
+.tracking-video { position: fixed; left: -2px; top: -2px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+@media (max-width: 900px) { .gesture-hero { min-height: 0; grid-template-columns: 1fr; gap: 38px; } .limits { grid-template-columns: 1fr; gap: 18px; } }
+@media (max-width: 760px) { .gesture-hero { padding: 58px 0; } .how-card { padding: 23px; } .scene-section { padding: 38px 0 60px; } .scene-heading { align-items: start; flex-direction: column; } .scene-tools { width: 100%; justify-content: space-between; } .scene-frame { height: 68vh; min-height: 390px; } .scene-overlay { left: 12px; right: 12px; font-size: 8px; } .scene-overlay-bottom { align-items: end; } .scene-overlay-bottom span:last-child { max-width: 45%; text-align: right; line-height: 1.5; } .scene-footer { align-items: start; } .limits { padding: 56px 0 72px; } }
+@media (prefers-reduced-motion: reduce) { .scene-empty { transition: none; } }
